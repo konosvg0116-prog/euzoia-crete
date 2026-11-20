@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Διαδραστικός οδηγός ύπνου για τους συμμετέχοντες της μελέτης Ευζωία.">
+<meta name="theme-color" content="#5c1612">
+<title>Ευζωία Ύπνος</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@500;700;800&family=Fira+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one calm reading column; each section is one interactive "station" the patient taps through */
+:root{
+  --bg:#f7f6f1; --surface:#ffffff; --surface-2:#eef0e4;
+  --fg:#22231d; --muted:#5d6152; --line:#d9dbcc;
+  --brand:#5c1612; --brand-soft:#f3e3e1;
+  --olive:#5f6f2a; --olive-soft:#e4e9cf;
+  --veg:#6f9a3a; --protein:#b5622e; --grain:#d6a63c; --water:#3d7fa6;
+  --ok:#2f7a3d; --ok-soft:#dcefdc; --bad:#a3302a; --bad-soft:#f6dedc;
+  --font-display:"Commissioner","Fira Sans",system-ui,sans-serif;
+  --font-body:"Fira Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#171812; --surface:#212219; --surface-2:#2a2c20;
+  --fg:#ecebe3; --muted:#b0b3a2; --line:#3a3c2f;
+  --brand:#e59a92; --brand-soft:#3a2120;
+  --olive:#b8c97a; --olive-soft:#2f3520;
+  --veg:#8dbb55; --protein:#d98852; --grain:#e3bb5c; --water:#6fb0d6;
+  --ok:#7cc488; --ok-soft:#1f3322; --bad:#ec8a83; --bad-soft:#3b2221;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#171812; --surface:#212219; --surface-2:#2a2c20;
+  --fg:#ecebe3; --muted:#b0b3a2; --line:#3a3c2f;
+  --brand:#e59a92; --brand-soft:#3a2120;
+  --olive:#b8c97a; --olive-soft:#2f3520;
+  --veg:#8dbb55; --protein:#d98852; --grain:#e3bb5c; --water:#6fb0d6;
+  --ok:#7cc488; --ok-soft:#1f3322; --bad:#ec8a83; --bad-soft:#3b2221;
+  color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.6}
+.ez{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:2rem 4rem;display:flex;flex-direction:column;gap:3rem}
+.ez h1,.ez h2,.ez h3{font-family:var(--font-display);line-height:1.2;text-wrap:balance;margin:0}
+.ez h1{font-size:clamp(2rem,6vw,2.8rem);font-weight:800;color:var(--brand)}
+.ez h2{font-size:1.55rem;font-weight:700}
+.ez h3{font-size:1.1rem;font-weight:700}
+.ez p{margin:0}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--olive);font-weight:600}
+.sec{display:flex;flex-direction:column;gap:1rem}
+.sec>.intro{color:var(--muted);max-width:62ch}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--water);outline-offset:2px;border-radius:6px}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:1rem}
+.hero .lead{font-size:1.12rem;max-width:60ch}
+.jump{display:flex;flex-wrap:wrap;gap:.5rem}
+.jump a{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:999px;background:var(--olive-soft);color:var(--fg);text-decoration:none;font-weight:500;font-size:.95rem}
+.jump a:hover{background:var(--surface-2)}
+.note{background:var(--brand-soft);border-left:4px solid var(--brand);padding:.9rem 1rem;border-radius:0 10px 10px 0;font-size:.98rem}
+
+/* plate */
+.plate-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.5rem;align-items:center}
+@media (max-width:620px){.plate-wrap{grid-template-columns:1fr}}
+.plate-svg{width:100%;max-width:340px;justify-self:center}
+.plate-svg .seg{cursor:pointer;transition:transform .2s ease,opacity .2s}
+.plate-svg .seg:hover,.plate-svg .seg.on{transform:scale(1.04)}
+.plate-svg .seg:not(.on){opacity:.82}
+.plate-svg text{font-family:var(--font-display);font-weight:700;pointer-events:none}
+.plate-panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.2rem;display:flex;flex-direction:column;gap:.6rem;min-width:0}
+.plate-panel .big{font-size:2rem;line-height:1}
+.plate-panel ul{margin:0;padding-left:1.1rem}
+.plate-btns{display:flex;flex-wrap:wrap;gap:.4rem}
+.plate-btns button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.35rem .8rem;font-size:.9rem}
+.plate-btns button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+/* frequency tabs */
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap}
+.tabs button{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:.55rem 1rem;font-weight:600}
+.tabs button[aria-selected="true"]{border-color:var(--olive);background:var(--olive-soft)}
+.foods{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem}
+.food{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem;display:flex;gap:.75rem;align-items:flex-start}
+.food .ic{font-size:1.9rem;line-height:1}
+.food b{display:block;font-family:var(--font-display)}
+.food span{color:var(--muted);font-size:.93rem;line-height:1.45}
+.freq-tag{display:inline-block;margin-top:.3rem;font-size:.8rem;font-weight:600;padding:.1rem .5rem;border-radius:6px;background:var(--surface-2);color:var(--fg)}
+
+/* swaps */
+.swaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.75rem}
+.swap{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:1rem;text-align:left;display:flex;flex-direction:column;gap:.4rem;min-height:132px}
+.swap .lbl{font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;color:var(--bad)}
+.swap .ic{font-size:1.7rem;line-height:1}
+.swap .hint{margin-top:auto;font-size:.82rem;color:var(--muted)}
+.swap[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok)}
+.swap[aria-pressed="true"] .lbl{color:var(--ok)}
+.salt-fact{display:flex;gap:1rem;align-items:center;background:var(--surface-2);border-radius:12px;padding:1rem}
+.salt-fact .num{font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--brand);white-space:nowrap}
+
+/* quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.25rem;display:flex;flex-direction:column;gap:1rem}
+.q-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;font-size:.9rem;color:var(--muted)}
+.dots{display:flex;gap:.3rem}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.dots i.done{background:var(--olive)}
+.opts{display:flex;flex-direction:column;gap:.5rem}
+.opts button{border:2px solid var(--line);background:var(--bg);border-radius:10px;padding:.7rem .9rem;text-align:left}
+.opts button:hover:not(:disabled){border-color:var(--olive)}
+.opts button.right{border-color:var(--ok);background:var(--ok-soft)}
+.opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opts button:disabled{cursor:default}
+.fb{padding:.8rem 1rem;border-radius:10px;background:var(--surface-2)}
+.btn{align-self:flex-start;background:var(--brand);color:var(--bg);border:0;border-radius:10px;padding:.65rem 1.2rem;font-weight:600}
+
+/* challenge */
+.goals{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem}
+.goal{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:.8rem .9rem;text-align:left;display:flex;gap:.6rem;align-items:center}
+.goal .ic{font-size:1.5rem}
+.goal[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.4rem}
+.day{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:.5rem 0;display:flex;flex-direction:column;align-items:center;gap:.15rem;font-size:.85rem}
+.day .mark{font-size:1.2rem;height:1.4rem}
+.day[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-soft)}
+.progress{font-weight:600}
+
+/* accordions */
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 1rem}
+details+details{margin-top:.6rem}
+summary{cursor:pointer;padding:.9rem 0;font-family:var(--font-display);font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.3rem;line-height:1;color:var(--olive)}
+details[open] summary::after{content:"−"}
+details .body{padding-bottom:1rem;display:flex;flex-direction:column;gap:.5rem}
+details ul{margin:0;padding-left:1.1rem}
+.sources{font-size:.88rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* activity extras */
+.calc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.2rem;display:flex;flex-direction:column;gap:1rem}
+.calc-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+.calc label{display:flex;flex-direction:column;gap:.35rem;font-weight:500;font-size:.95rem}
+.calc label small{color:var(--muted);font-weight:400}
+.stepper{display:flex;align-items:center;gap:.5rem}
+.stepper button{width:2.4rem;height:2.4rem;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:1.2rem;font-weight:600}
+.stepper output{min-width:4.5rem;text-align:center;font-family:var(--font-display);font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.bar{height:22px;border-radius:999px;background:var(--surface-2);overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:var(--olive);border-radius:999px;transition:width .3s}
+.bar.done i{background:var(--ok)}
+.total{font-family:var(--font-display);font-weight:800;font-size:2rem;color:var(--brand);font-variant-numeric:tabular-nums}
+.sort{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.75rem}
+.act{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem;display:flex;flex-direction:column;gap:.5rem}
+.act .ic{font-size:1.6rem;line-height:1}
+.act .ch{display:flex;gap:.4rem}
+.act .ch button{flex:1;border:2px solid var(--line);background:var(--bg);border-radius:8px;padding:.35rem;font-size:.88rem;font-weight:600}
+.act .ch button.right{border-color:var(--ok);background:var(--ok-soft)}
+.act .ch button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.act .ex{font-size:.88rem;color:var(--muted)}
+.talk{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem}
+.talk div{border-radius:12px;padding:1rem;background:var(--surface-2)}
+.talk b{font-family:var(--font-display);display:block;font-size:1.05rem}
+.ex-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.75rem}
+.exc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.35rem}
+.exc b{font-family:var(--font-display)}
+.exc span{color:var(--muted);font-size:.93rem}
+.plan{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.4rem}
+.pday{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:.5rem .2rem;display:flex;flex-direction:column;align-items:center;gap:.2rem;font-size:.82rem}
+.pday b{font-family:var(--font-display);font-size:1rem;font-variant-numeric:tabular-nums}
+.pday.on{border-color:var(--ok);background:var(--ok-soft)}
+.pday.str{box-shadow:inset 0 -4px 0 var(--protein)}
+.safety{background:var(--bad-soft);border-left:4px solid var(--bad);padding:.9rem 1rem;border-radius:0 10px 10px 0}
+.safety ul{margin:.4rem 0 0;padding-left:1.1rem}
+
+/* sleep extras */
+.tm{font:inherit;font-size:1.3rem;font-family:var(--font-display);font-weight:700;padding:.5rem .7rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);max-width:11rem}
+.scale{display:flex;flex-direction:column;gap:.3rem}
+.ticks{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ticks .goal-t{color:var(--ok);font-weight:700}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.6rem}
+.chk{display:flex;gap:.75rem;align-items:flex-start;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:.8rem .9rem}
+.chk .box{flex:none;width:1.5rem;height:1.5rem;border-radius:6px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--ok);background:var(--bg)}
+.chk strong{display:block;font-weight:600;line-height:1.35}
+.chk small{display:block;color:var(--muted);font-size:.88rem;margin-top:.3rem;line-height:1.4}
+.chk[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-soft)}
+.chk[aria-pressed="true"] .box{border-color:var(--ok)}
+.help{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+p.safety,p.note{margin:0}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<div class="ez" id="ez-sleep">
+
+  <header class="hero">
+    <span class="eyebrow">Ευζωία · Ύπνος</span>
+    <h1>Καλός ύπνος, δυνατή καρδιά</h1>
+    <p class="lead">Από το 2022 ο ύπνος είναι ένα από τα 8 βασικά στοιχεία υγείας της καρδιάς («Life's Essential 8»). Ο λίγος ή κακός ύπνος συνδέεται με αύξηση βάρους, υψηλότερη πίεση, χειρότερο σάκχαρο, περισσότερο στρες και κούραση μέσα στη μέρα. <strong>Στόχος για ενήλικες: 7 έως 9 ώρες κάθε νύχτα.</strong></p>
+    <nav class="jump" aria-label="Ενότητες σελίδας">
+      <a href="#hours">🕰️ Πόσο κοιμάμαι;</a>
+      <a href="#habits">✅ Οι συνήθειές μου</a>
+      <a href="#awake">🌙 Δεν με παίρνει ο ύπνος</a>
+      <a href="#apnea">😴 Ροχαλητό και άπνοια</a>
+    </nav>
+  </header>
+
+  <section class="sec" id="hours">
+    <span class="eyebrow">Βήμα 1</span>
+    <h2>Πόσες ώρες κοιμάμαι;</h2>
+    <p class="intro">Βάλτε την ώρα που συνήθως αποκοιμιέστε και την ώρα που ξυπνάτε.</p>
+    <div class="calc">
+      <div class="calc-row">
+        <label for="t-bed">Αποκοιμιέμαι γύρω στις <input id="t-bed" type="time" value="23:30" class="tm"></label>
+        <label for="t-wake">Ξυπνάω γύρω στις <input id="t-wake" type="time" value="06:30" class="tm"></label>
+      </div>
+      <div><span class="total" id="sl-tot">7 ώρες</span> <span>ύπνου τη νύχτα</span></div>
+      <div class="scale" aria-hidden="true">
+        <div class="bar"><i id="sl-bar" style="width:0%"></i></div>
+        <div class="ticks"><span>4ω</span><span>5ω</span><span>6ω</span><span class="goal-t">7ω</span><span class="goal-t">8ω</span><span class="goal-t">9ω</span><span>10ω</span><span>11ω</span></div>
+      </div>
+      <p id="sl-msg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="sec" id="habits">
+    <span class="eyebrow">Βήμα 2</span>
+    <h2>Ελέγξτε τις συνήθειές σας</h2>
+    <p class="intro">Τσεκάρετε όσα κάνετε ήδη τις περισσότερες μέρες. Για όσα δεν έχετε τσεκάρει, δείτε τη συμβουλή από κάτω.</p>
+    <div class="checks" id="checks"></div>
+    <p class="progress" id="ch-msg" aria-live="polite"></p>
+  </section>
+
+  <section class="sec" id="awake">
+    <span class="eyebrow">Βήμα 3</span>
+    <h2>Ξάπλωσα και δεν με παίρνει ο ύπνος</h2>
+    <p class="intro">Ο κανόνας των 20 λεπτών βοηθά το μυαλό να ξανασυνδέσει το κρεβάτι με τον ύπνο. Πατήστε «Επόμενο» για κάθε βήμα.</p>
+    <div class="quiz" id="steps" aria-live="polite"></div>
+  </section>
+
+  <section class="sec" id="apnea">
+    <span class="eyebrow">Βήμα 4</span>
+    <h2>Ροχαλητό και άπνοια στον ύπνο</h2>
+    <p class="intro">Η αποφρακτική άπνοια στον ύπνο είναι συχνή σε άτομα με αυξημένο βάρος: η αναπνοή σταματά επανειλημμένα μέσα στη νύχτα. Τσεκάρετε ό,τι ισχύει για εσάς.</p>
+    <div class="checks" id="ap"></div>
+    <div id="ap-msg" aria-live="polite"></div>
+    <p class="note"><strong>Καλά νέα:</strong> η απώλεια βάρους, η κίνηση και η αποφυγή του αλκοόλ το βράδυ βοηθούν στη βελτίωση της άπνοιας.</p>
+    <details>
+      <summary>Χρησιμοποιώ CPAP. Πώς τα πάω καλύτερα;</summary>
+      <div class="body"><ul>
+        <li>Χρησιμοποιείτε τη συσκευή <strong>κάθε νύχτα, για όλη τη διάρκεια του ύπνου</strong>, ακόμη και στον μεσημεριανό.</li>
+        <li>Αν η μάσκα ενοχλεί, έχει διαρροές ή σας ξηραίνει τη μύτη ή το στόμα, <strong>μην τη σταματήσετε</strong>. Επικοινωνήστε με το Εργαστήριο Ύπνου: συχνά λύνεται με άλλο μέγεθος μάσκας ή με υγραντήρα.</li>
+        <li>Καθαρίζετε τη μάσκα και τον σωλήνα σύμφωνα με τις οδηγίες του κατασκευαστή.</li>
+        <li>Παίρνετε τη συσκευή μαζί σας στα ταξίδια.</li>
+      </ul></div>
+    </details>
+    <p class="safety">⚠️ <strong>Αν νυστάζετε στο τιμόνι, μην οδηγείτε.</strong> Σταματήστε σε ασφαλές σημείο και ενημερώστε τον γιατρό σας.</p>
+  </section>
+
+  <section class="sec">
+    <h2>Πότε να ζητήσετε βοήθεια</h2>
+    <ul class="help">
+      <li>Δυσκολεύεστε να κοιμηθείτε ή ξυπνάτε τη νύχτα <strong>τουλάχιστον 3 νύχτες την εβδομάδα για πάνω από 3 μήνες</strong>, και αυτό σας επηρεάζει μέσα στη μέρα.</li>
+      <li>Έχετε κάποιο από τα σημάδια άπνοιας που αναφέρονται παραπάνω.</li>
+      <li>Νιώθετε μόνιμα κουρασμένοι ή κατεβασμένοι.</li>
+    </ul>
+    <p>Μην ξεκινάτε υπνωτικά χάπια ή συμπληρώματα (π.χ. μελατονίνη) χωρίς να ρωτήσετε τον γιατρό σας.</p>
+    <details>
+      <summary>Πηγές</summary>
+      <div class="body sources"><ul>
+        <li>Lloyd-Jones DM, et al. Life's Essential 8. Circulation. 2022;146(5):e18–e43.</li>
+        <li>Watson NF, et al. Recommended Amount of Sleep for a Healthy Adult: A Joint Consensus Statement of the American Academy of Sleep Medicine and Sleep Research Society. Sleep. 2015;38(6):843–844.</li>
+        <li>Yeghiazarians Y, et al. Obstructive Sleep Apnea and Cardiovascular Disease: A Scientific Statement From the American Heart Association. Circulation. 2021;144(3):e56–e67.</li>
+      </ul></div>
+    </details>
+  </section>
+</div>
+
+<script>
+(function(){
+  /* duration */
+  var bed=document.getElementById("t-bed"),wake=document.getElementById("t-wake");
+  function mins(v){var p=(v||"0:0").split(":");return (+p[0])*60+(+p[1])}
+  function dur(){
+    var d=mins(wake.value)-mins(bed.value);if(d<=0)d+=1440;
+    var h=d/60,hh=Math.floor(d/60),mm=d%60;
+    document.getElementById("sl-tot").textContent=hh+" ώρες"+(mm?" και "+mm+" λεπτά":"");
+    var p=Math.max(0,Math.min(100,(h-4)/7*100));document.getElementById("sl-bar").style.width=p+"%";
+    var bar=document.getElementById("sl-bar").parentNode;bar.classList.toggle("done",h>=7&&h<=9);
+    var m;
+    if(h<6)m="Κοιμάστε αρκετά λιγότερο από όσο χρειάζεται ο οργανισμός. Δοκιμάστε να πηγαίνετε για ύπνο 15–20 λεπτά νωρίτερα κάθε εβδομάδα και δείτε τις συνήθειες παρακάτω.";
+    else if(h<7)m="Είστε κοντά στον στόχο. Λίγο νωρίτερα για ύπνο, μισή ώρα ακόμη, και φτάνετε τις 7 ώρες.";
+    else if(h<=9)m="Μπράβο! Είστε μέσα στον στόχο των 7–9 ωρών. Κρατήστε σταθερή την ώρα που ξυπνάτε.";
+    else m="Κοιμάστε πάνω από 9 ώρες. Αν παρ' όλα αυτά νιώθετε κουρασμένοι μέσα στη μέρα, συζητήστε το με τον γιατρό σας.";
+    document.getElementById("sl-msg").textContent=m;
+  }
+  bed.addEventListener("input",dur);wake.addEventListener("input",dur);dur();
+
+  /* habits */
+  var H=[
+    ["Ξυπνάω την ίδια ώρα κάθε μέρα, και τα Σαββατοκύριακα","Η σταθερή ώρα αφύπνισης είναι το πιο σημαντικό βήμα για να ρυθμιστεί το βιολογικό σας ρολόι."],
+    ["Πάω για ύπνο όταν νυστάζω, όχι απλώς επειδή είναι η ώρα","Αν ξαπλώνετε χωρίς να νυστάζετε, το κρεβάτι συνδέεται με την αγρύπνια."],
+    ["Στο κρεβάτι μόνο κοιμάμαι (όχι τηλεόραση, κινητό, φαγητό)","Κρατήστε το κρεβάτι μόνο για ύπνο, ώστε να «σημαίνει» ύπνο για το μυαλό σας."],
+    ["Βγαίνω στο φως της ημέρας το πρωί","Το πρωινό φως ρυθμίζει το βιολογικό ρολόι. Ένας σύντομος περίπατος το πρωί βοηθά διπλά."],
+    ["Αφήνω τις οθόνες 30–60 λεπτά πριν τον ύπνο","Χαμηλώστε τα φώτα και αφήστε κινητό και tablet έξω από την κρεβατοκάμαρα."],
+    ["Δεν πίνω καφέ, τσάι ή κόλα μετά το μεσημέρι","Η καφεΐνη μπορεί να επηρεάζει τον ύπνο πολλές ώρες αργότερα."],
+    ["Τρώω ελαφρύ βραδινό, 2–3 ώρες πριν τον ύπνο","Το βαρύ φαγητό αργά το βράδυ δυσκολεύει τον ύπνο και μπορεί να φέρει καούρες."],
+    ["Αποφεύγω το αλκοόλ το βράδυ","Το αλκοόλ κάνει τον ύπνο ρηχό και διακοπτόμενο και χειροτερεύει το ροχαλητό και την άπνοια."],
+    ["Ο μεσημεριανός μου ύπνος κρατά έως 20–30 λεπτά","Ο μεγάλος ή αργός μεσημεριανός ύπνος «κλέβει» από τον βραδινό."],
+    ["Το δωμάτιό μου είναι σκοτεινό, ήσυχο και δροσερό","Κουρτίνες συσκότισης, ωτοασπίδες ή μάσκα ματιών μπορούν να βοηθήσουν."]
+  ];
+  var KEY="euzoia-sleep-habits",sel=[];
+  try{var s=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(s))sel=s}catch(e){}
+  var ch=document.getElementById("checks");
+  function rh(){
+    ch.innerHTML=H.map(function(h,i){var on=sel.indexOf(i)>-1;return'<button type="button" class="chk" aria-pressed="'+on+'" data-i="'+i+'"><span class="box" aria-hidden="true">'+(on?"✔":"")+'</span><span><strong>'+h[0]+'</strong>'+(on?"":'<small>'+h[1]+'</small>')+'</span></button>'}).join("");
+    var n=sel.length;
+    document.getElementById("ch-msg").textContent=n+" από "+H.length+" συνήθειες"+(n===H.length?". Εξαιρετικά!":n>=7?". Πολύ καλά! Διαλέξτε μία από τις υπόλοιπες για αυτή την εβδομάδα.":". Διαλέξτε μία συνήθεια που δεν έχετε τσεκάρει και δοκιμάστε την αυτή την εβδομάδα.");
+    ch.querySelectorAll(".chk").forEach(function(b){b.onclick=function(){var i=+b.dataset.i,k=sel.indexOf(i);if(k>-1)sel.splice(k,1);else sel.push(i);try{localStorage.setItem(KEY,JSON.stringify(sel))}catch(e){}rh()}});
+  }
+  rh();
+
+  /* 20 minute rule steps */
+  var ST=[["🛏️","Ξαπλώσατε και δεν σας παίρνει ο ύπνος","Αν περάσουν περίπου 20 λεπτά, ή αν νιώθετε ότι πέρασε πολλή ώρα, μην μείνετε στο κρεβάτι να στριφογυρίζετε. Μην κοιτάτε το ρολόι."],["🚪","Σηκωθείτε","Πηγαίνετε σε άλλο δωμάτιο με χαμηλό, ζεστό φως."],["📖","Κάντε κάτι ήρεμο","Διαβάστε ένα έντυπο βιβλίο, ακούστε ήρεμη μουσική ή κάντε αργές αναπνοές. Όχι κινητό, όχι τηλεόραση, όχι δουλειές."],["😪","Επιστρέψτε όταν νυστάξετε","Μόλις νιώσετε ότι κλείνουν τα μάτια, γυρίστε στο κρεβάτι. Αν χρειαστεί, επαναλάβετε."],["⏰","Το πρωί, ξυπνήστε στην ίδια ώρα","Ακόμη κι αν κοιμηθήκατε λίγο, σηκωθείτε στη συνηθισμένη ώρα και αποφύγετε τον μεγάλο μεσημεριανό ύπνο. Έτσι το επόμενο βράδυ θα νυστάξετε πιο εύκολα."]];
+  var si=0,sb=document.getElementById("steps");
+  function rs(){
+    var d=ST[si];
+    sb.innerHTML='<div class="q-top"><span>Βήμα '+(si+1)+' από '+ST.length+'</span><span class="dots">'+ST.map(function(_,i){return'<i class="'+(i<=si?"done":"")+'"></i>'}).join("")+'</span></div><div class="big" style="font-size:2.2rem" aria-hidden="true">'+d[0]+'</div><h3>'+d[1]+'</h3><p>'+d[2]+'</p><div style="display:flex;gap:.5rem;flex-wrap:wrap">'+(si>0?'<button type="button" class="btn" id="s-prev" style="background:var(--surface-2);color:var(--fg)">Πίσω</button>':'')+'<button type="button" class="btn" id="s-next">'+(si<ST.length-1?"Επόμενο":"Από την αρχή")+'</button></div>';
+    document.getElementById("s-next").onclick=function(){si=si<ST.length-1?si+1:0;rs()};
+    var pv=document.getElementById("s-prev");if(pv)pv.onclick=function(){si--;rs()};
+  }
+  rs();
+
+  /* apnea red flags */
+  var AP=["Ροχαλίζω δυνατά","Ο/η σύντροφός μου έχει δει να σταματώ να αναπνέω στον ύπνο","Ξυπνάω με αίσθημα πνιγμού ή λαχανιάσματος","Ξυπνάω με πονοκέφαλο ή ξηροστομία","Νυστάζω πολύ μέσα στη μέρα, ακόμη κι αν κοιμάμαι αρκετές ώρες","Έχω υψηλή αρτηριακή πίεση"];
+  var as=[],ap=document.getElementById("ap");
+  function ra(){
+    ap.innerHTML=AP.map(function(a,i){var on=as.indexOf(i)>-1;return'<button type="button" class="chk" aria-pressed="'+on+'" data-i="'+i+'"><span class="box" aria-hidden="true">'+(on?"✔":"")+'</span><span><strong>'+a+'</strong></span></button>'}).join("");
+    var n=as.length,m=document.getElementById("ap-msg");
+    m.innerHTML=n===0?"":n>=2?'<p class="safety"><strong>Συζητήστε το με τον γιατρό σας.</strong> Τσεκάρατε '+n+' σημάδια που μπορεί να σχετίζονται με άπνοια στον ύπνο. Ο γιατρός σας μπορεί να σας παραπέμψει για μελέτη ύπνου. Αν ήδη παρακολουθείστε στο Εργαστήριο Ύπνου, αναφέρετέ το στην επόμενη επίσκεψη.</p>':'<p class="note">Ένα μόνο σημάδι δεν σημαίνει απαραίτητα άπνοια. Αν σας απασχολεί ή επιμένει, αναφέρετέ το στον γιατρό σας.</p>';
+    ap.querySelectorAll(".chk").forEach(function(b){b.onclick=function(){var i=+b.dataset.i,k=as.indexOf(i);if(k>-1)as.splice(k,1);else as.push(i);ra()}});
+  }
+  ra();
+})();
+</script>
+</body>
+</html>
