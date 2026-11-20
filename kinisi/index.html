@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Διαδραστικός οδηγός φυσικής δραστηριότητας για τους συμμετέχοντες της μελέτης Ευζωία.">
+<meta name="theme-color" content="#5c1612">
+<title>Ευζωία Κίνηση</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@500;700;800&family=Fira+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one calm reading column; each section is one interactive "station" the patient taps through */
+:root{
+  --bg:#f7f6f1; --surface:#ffffff; --surface-2:#eef0e4;
+  --fg:#22231d; --muted:#5d6152; --line:#d9dbcc;
+  --brand:#5c1612; --brand-soft:#f3e3e1;
+  --olive:#5f6f2a; --olive-soft:#e4e9cf;
+  --veg:#6f9a3a; --protein:#b5622e; --grain:#d6a63c; --water:#3d7fa6;
+  --ok:#2f7a3d; --ok-soft:#dcefdc; --bad:#a3302a; --bad-soft:#f6dedc;
+  --font-display:"Commissioner","Fira Sans",system-ui,sans-serif;
+  --font-body:"Fira Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#171812; --surface:#212219; --surface-2:#2a2c20;
+  --fg:#ecebe3; --muted:#b0b3a2; --line:#3a3c2f;
+  --brand:#e59a92; --brand-soft:#3a2120;
+  --olive:#b8c97a; --olive-soft:#2f3520;
+  --veg:#8dbb55; --protein:#d98852; --grain:#e3bb5c; --water:#6fb0d6;
+  --ok:#7cc488; --ok-soft:#1f3322; --bad:#ec8a83; --bad-soft:#3b2221;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#171812; --surface:#212219; --surface-2:#2a2c20;
+  --fg:#ecebe3; --muted:#b0b3a2; --line:#3a3c2f;
+  --brand:#e59a92; --brand-soft:#3a2120;
+  --olive:#b8c97a; --olive-soft:#2f3520;
+  --veg:#8dbb55; --protein:#d98852; --grain:#e3bb5c; --water:#6fb0d6;
+  --ok:#7cc488; --ok-soft:#1f3322; --bad:#ec8a83; --bad-soft:#3b2221;
+  color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.6}
+.ez{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:2rem 4rem;display:flex;flex-direction:column;gap:3rem}
+.ez h1,.ez h2,.ez h3{font-family:var(--font-display);line-height:1.2;text-wrap:balance;margin:0}
+.ez h1{font-size:clamp(2rem,6vw,2.8rem);font-weight:800;color:var(--brand)}
+.ez h2{font-size:1.55rem;font-weight:700}
+.ez h3{font-size:1.1rem;font-weight:700}
+.ez p{margin:0}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--olive);font-weight:600}
+.sec{display:flex;flex-direction:column;gap:1rem}
+.sec>.intro{color:var(--muted);max-width:62ch}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--water);outline-offset:2px;border-radius:6px}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:1rem}
+.hero .lead{font-size:1.12rem;max-width:60ch}
+.jump{display:flex;flex-wrap:wrap;gap:.5rem}
+.jump a{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:999px;background:var(--olive-soft);color:var(--fg);text-decoration:none;font-weight:500;font-size:.95rem}
+.jump a:hover{background:var(--surface-2)}
+.note{background:var(--brand-soft);border-left:4px solid var(--brand);padding:.9rem 1rem;border-radius:0 10px 10px 0;font-size:.98rem}
+
+/* plate */
+.plate-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.5rem;align-items:center}
+@media (max-width:620px){.plate-wrap{grid-template-columns:1fr}}
+.plate-svg{width:100%;max-width:340px;justify-self:center}
+.plate-svg .seg{cursor:pointer;transition:transform .2s ease,opacity .2s}
+.plate-svg .seg:hover,.plate-svg .seg.on{transform:scale(1.04)}
+.plate-svg .seg:not(.on){opacity:.82}
+.plate-svg text{font-family:var(--font-display);font-weight:700;pointer-events:none}
+.plate-panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.2rem;display:flex;flex-direction:column;gap:.6rem;min-width:0}
+.plate-panel .big{font-size:2rem;line-height:1}
+.plate-panel ul{margin:0;padding-left:1.1rem}
+.plate-btns{display:flex;flex-wrap:wrap;gap:.4rem}
+.plate-btns button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.35rem .8rem;font-size:.9rem}
+.plate-btns button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+/* frequency tabs */
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap}
+.tabs button{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:.55rem 1rem;font-weight:600}
+.tabs button[aria-selected="true"]{border-color:var(--olive);background:var(--olive-soft)}
+.foods{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem}
+.food{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem;display:flex;gap:.75rem;align-items:flex-start}
+.food .ic{font-size:1.9rem;line-height:1}
+.food b{display:block;font-family:var(--font-display)}
+.food span{color:var(--muted);font-size:.93rem;line-height:1.45}
+.freq-tag{display:inline-block;margin-top:.3rem;font-size:.8rem;font-weight:600;padding:.1rem .5rem;border-radius:6px;background:var(--surface-2);color:var(--fg)}
+
+/* swaps */
+.swaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.75rem}
+.swap{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:1rem;text-align:left;display:flex;flex-direction:column;gap:.4rem;min-height:132px}
+.swap .lbl{font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;color:var(--bad)}
+.swap .ic{font-size:1.7rem;line-height:1}
+.swap .hint{margin-top:auto;font-size:.82rem;color:var(--muted)}
+.swap[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok)}
+.swap[aria-pressed="true"] .lbl{color:var(--ok)}
+.salt-fact{display:flex;gap:1rem;align-items:center;background:var(--surface-2);border-radius:12px;padding:1rem}
+.salt-fact .num{font-family:var(--font-display);font-weight:800;font-size:2.2rem;color:var(--brand);white-space:nowrap}
+
+/* quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.25rem;display:flex;flex-direction:column;gap:1rem}
+.q-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;font-size:.9rem;color:var(--muted)}
+.dots{display:flex;gap:.3rem}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.dots i.done{background:var(--olive)}
+.opts{display:flex;flex-direction:column;gap:.5rem}
+.opts button{border:2px solid var(--line);background:var(--bg);border-radius:10px;padding:.7rem .9rem;text-align:left}
+.opts button:hover:not(:disabled){border-color:var(--olive)}
+.opts button.right{border-color:var(--ok);background:var(--ok-soft)}
+.opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opts button:disabled{cursor:default}
+.fb{padding:.8rem 1rem;border-radius:10px;background:var(--surface-2)}
+.btn{align-self:flex-start;background:var(--brand);color:var(--bg);border:0;border-radius:10px;padding:.65rem 1.2rem;font-weight:600}
+
+/* challenge */
+.goals{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem}
+.goal{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:.8rem .9rem;text-align:left;display:flex;gap:.6rem;align-items:center}
+.goal .ic{font-size:1.5rem}
+.goal[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.4rem}
+.day{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:.5rem 0;display:flex;flex-direction:column;align-items:center;gap:.15rem;font-size:.85rem}
+.day .mark{font-size:1.2rem;height:1.4rem}
+.day[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-soft)}
+.progress{font-weight:600}
+
+/* accordions */
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 1rem}
+details+details{margin-top:.6rem}
+summary{cursor:pointer;padding:.9rem 0;font-family:var(--font-display);font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.3rem;line-height:1;color:var(--olive)}
+details[open] summary::after{content:"−"}
+details .body{padding-bottom:1rem;display:flex;flex-direction:column;gap:.5rem}
+details ul{margin:0;padding-left:1.1rem}
+.sources{font-size:.88rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* activity extras */
+.calc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.2rem;display:flex;flex-direction:column;gap:1rem}
+.calc-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+.calc label{display:flex;flex-direction:column;gap:.35rem;font-weight:500;font-size:.95rem}
+.calc label small{color:var(--muted);font-weight:400}
+.stepper{display:flex;align-items:center;gap:.5rem}
+.stepper button{width:2.4rem;height:2.4rem;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:1.2rem;font-weight:600}
+.stepper output{min-width:4.5rem;text-align:center;font-family:var(--font-display);font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.bar{height:22px;border-radius:999px;background:var(--surface-2);overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:var(--olive);border-radius:999px;transition:width .3s}
+.bar.done i{background:var(--ok)}
+.total{font-family:var(--font-display);font-weight:800;font-size:2rem;color:var(--brand);font-variant-numeric:tabular-nums}
+.sort{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.75rem}
+.act{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem;display:flex;flex-direction:column;gap:.5rem}
+.act .ic{font-size:1.6rem;line-height:1}
+.act .ch{display:flex;gap:.4rem}
+.act .ch button{flex:1;border:2px solid var(--line);background:var(--bg);border-radius:8px;padding:.35rem;font-size:.88rem;font-weight:600}
+.act .ch button.right{border-color:var(--ok);background:var(--ok-soft)}
+.act .ch button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.act .ex{font-size:.88rem;color:var(--muted)}
+.talk{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem}
+.talk div{border-radius:12px;padding:1rem;background:var(--surface-2)}
+.talk b{font-family:var(--font-display);display:block;font-size:1.05rem}
+.ex-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.75rem}
+.exc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.35rem}
+.exc b{font-family:var(--font-display)}
+.exc span{color:var(--muted);font-size:.93rem}
+.plan{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.4rem}
+.pday{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:.5rem .2rem;display:flex;flex-direction:column;align-items:center;gap:.2rem;font-size:.82rem}
+.pday b{font-family:var(--font-display);font-size:1rem;font-variant-numeric:tabular-nums}
+.pday.on{border-color:var(--ok);background:var(--ok-soft)}
+.pday.str{box-shadow:inset 0 -4px 0 var(--protein)}
+.safety{background:var(--bad-soft);border-left:4px solid var(--bad);padding:.9rem 1rem;border-radius:0 10px 10px 0}
+.safety ul{margin:.4rem 0 0;padding-left:1.1rem}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<div class="ez" id="ez-activity">
+
+  <header class="hero">
+    <span class="eyebrow">Ευζωία · Φυσική δραστηριότητα</span>
+    <h1>Κάθε βήμα μετράει</h1>
+    <p class="lead">Η φυσική δραστηριότητα είναι ένα από τα 8 βασικά στοιχεία υγείας της καρδιάς («Life's Essential 8»). Βοηθά την πίεση, το σάκχαρο, τη χοληστερόλη, το βάρος, τον ύπνο και τη διάθεση. Δεν χρειάζεστε γυμναστήριο: <strong>λίγη κίνηση είναι καλύτερη από καθόλου</strong>, και περισσότερη είναι ακόμη καλύτερη.</p>
+    <nav class="jump" aria-label="Ενότητες σελίδας">
+      <a href="#calc">⏱️ Πόσο κινούμαι;</a>
+      <a href="#talk">🗣️ Μέτρια ή έντονη;</a>
+      <a href="#strength">💪 Δύναμη</a>
+      <a href="#sit">🪑 Λιγότερο κάθισμα</a>
+      <a href="#plan">📅 Το πρόγραμμά μου</a>
+    </nav>
+  </header>
+
+  <section class="sec" id="calc">
+    <span class="eyebrow">Βήμα 1</span>
+    <h2>Πόσο κινούμαι την εβδομάδα;</h2>
+    <p class="intro">Ο στόχος για ενήλικες είναι <strong>τουλάχιστον 150 λεπτά μέτριας</strong> ή <strong>75 λεπτά έντονης</strong> δραστηριότητας την εβδομάδα, ή συνδυασμός τους. Ένα λεπτό έντονης μετράει όσο δύο λεπτά μέτριας. Συμπληρώστε μια συνηθισμένη εβδομάδα σας.</p>
+    <div class="calc">
+      <div class="calc-row">
+        <label>Μέτρια δραστηριότητα <small>γρήγορο περπάτημα, ποδήλατο με χαλαρό ρυθμό, χορός, κηπουρική</small>
+          <span class="stepper"><button type="button" data-t="mod" data-d="-10" aria-label="Λιγότερα λεπτά μέτριας">−</button><output id="mod">0 λ.</output><button type="button" data-t="mod" data-d="10" aria-label="Περισσότερα λεπτά μέτριας">+</button></span></label>
+        <label>Έντονη δραστηριότητα <small>τρέξιμο, ανηφορική πεζοπορία, γρήγορο ποδήλατο, κολύμβηση με ρυθμό</small>
+          <span class="stepper"><button type="button" data-t="vig" data-d="-5" aria-label="Λιγότερα λεπτά έντονης">−</button><output id="vig">0 λ.</output><button type="button" data-t="vig" data-d="5" aria-label="Περισσότερα λεπτά έντονης">+</button></span></label>
+      </div>
+      <div><span class="total" id="tot">0</span> <span>από 150 λεπτά την εβδομάδα</span></div>
+      <div class="bar" id="bar"><i style="width:0%"></i></div>
+      <p id="calc-msg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="sec" id="talk">
+    <span class="eyebrow">Βήμα 2</span>
+    <h2>Μέτρια ή έντονη; Το «τεστ της ομιλίας»</h2>
+    <div class="talk">
+      <div><b>Ελαφριά</b>Μπορείτε να μιλάτε και να τραγουδάτε άνετα.</div>
+      <div><b>Μέτρια</b>Μπορείτε να μιλάτε, αλλά όχι να τραγουδάτε. Η αναπνοή γίνεται πιο γρήγορη.</div>
+      <div><b>Έντονη</b>Λέτε μόνο λίγες λέξεις πριν πάρετε ανάσα.</div>
+    </div>
+    <p class="intro">Μαντέψτε: είναι μέτρια ή έντονη;</p>
+    <div class="sort" id="sort"></div>
+  </section>
+
+  <section class="sec" id="strength">
+    <span class="eyebrow">Βήμα 3</span>
+    <h2>Δύναμη, 2 φορές την εβδομάδα</h2>
+    <p class="intro">Οι ασκήσεις ενδυνάμωσης κρατούν τους μυς και τα οστά δυνατά και βοηθούν το μεταβολισμό, ειδικά όταν χάνουμε βάρος. Ξεκινήστε με 1–2 σετ των 8–12 επαναλήψεων, χωρίς πόνο.</p>
+    <div class="ex-list">
+      <div class="exc"><b>Καθίσματα σε καρέκλα</b><span>Σηκωθείτε από την καρέκλα χωρίς χέρια και ξανακαθίστε αργά.</span></div>
+      <div class="exc"><b>Κάμψεις στον τοίχο</b><span>Χέρια στον τοίχο στο ύψος των ώμων, λυγίστε τους αγκώνες και σπρώξτε πίσω.</span></div>
+      <div class="exc"><b>Ανεβοκατέβασμα σκαλιού</b><span>Στο πρώτο σκαλί, κρατώντας την κουπαστή.</span></div>
+      <div class="exc"><b>Άρσεις μπουκαλιών</b><span>Δύο μπουκάλια νερού στα χέρια, σηκώστε τα από τους ώμους προς τα πάνω.</span></div>
+      <div class="exc"><b>Άρσεις στις μύτες</b><span>Όρθιοι, κρατηθείτε από μια καρέκλα και ανεβείτε στις μύτες των ποδιών.</span></div>
+      <div class="exc"><b>Γέφυρα</b><span>Ξαπλωμένοι ανάσκελα, λυγισμένα γόνατα, σηκώστε τη λεκάνη και κατεβάστε αργά.</span></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sit">
+    <span class="eyebrow">Βήμα 4</span>
+    <h2>Λιγότερο κάθισμα, περισσότερη κίνηση</h2>
+    <div class="ex-list">
+      <div class="exc"><b>Σηκωθείτε συχνά</b><span>Κάθε 30–60 λεπτά καθίσματος, σηκωθείτε για 2–3 λεπτά.</span></div>
+      <div class="exc"><b>Περπάτημα μετά το φαγητό</b><span>10–15 λεπτά μετά το μεσημεριανό ή το βραδινό βοηθούν και το σάκχαρο.</span></div>
+      <div class="exc"><b>Σκάλες αντί για ασανσέρ</b><span>Κάθε όροφος μετράει.</span></div>
+      <div class="exc"><b>Παρκάρετε πιο μακριά</b><span>Ή κατεβείτε μία στάση νωρίτερα από το λεωφορείο.</span></div>
+      <div class="exc"><b>Τηλεφωνήματα όρθιοι</b><span>Περπατήστε μέσα στο σπίτι όσο μιλάτε.</span></div>
+      <div class="exc"><b>Βρείτε παρέα</b><span>Περπάτημα με φίλο, σύντροφο ή τον σκύλο σας κρατά το κίνητρο.</span></div>
+    </div>
+  </section>
+
+  <section class="sec" id="plan">
+    <span class="eyebrow">Βήμα 5</span>
+    <h2>Το πρόγραμμά μου για αυτή την εβδομάδα</h2>
+    <p class="intro">Πατήστε κάθε μέρα για να προσθέσετε 10 λεπτά περπάτημα (ή άλλη μέτρια κίνηση). Πατήστε «Δύναμη» για τις μέρες με ασκήσεις ενδυνάμωσης. Η επιλογή σας μένει μόνο σε αυτή τη συσκευή.</p>
+    <div class="plan" id="pl"></div>
+    <div class="bar" id="pbar"><i style="width:0%"></i></div>
+    <p class="progress" id="pmsg" aria-live="polite"></p>
+    <button type="button" class="btn" id="preset">Μηδενισμός εβδομάδας</button>
+  </section>
+
+  <section class="sec">
+    <h2>Με ασφάλεια</h2>
+    <div class="safety"><strong>Σταματήστε και επικοινωνήστε με γιατρό</strong> αν κατά την άσκηση νιώσετε:
+      <ul><li>πόνο ή σφίξιμο στο στήθος,</li><li>δύσπνοια δυσανάλογη με την προσπάθεια,</li><li>ζάλη, λιποθυμική τάση ή έντονο αίσθημα παλμών.</li></ul>
+    </div>
+    <details>
+      <summary>Πώς ξεκινώ αν δεν κινούμαι καθόλου;</summary>
+      <div class="body"><p>Ξεκινήστε με 5–10 λεπτά περπάτημα την ημέρα και προσθέτετε λίγα λεπτά κάθε εβδομάδα. Αν έχετε κάποιο πρόβλημα υγείας, πόνο στις αρθρώσεις ή παίρνετε φάρμακα για την πίεση ή την καρδιά, ρωτήστε τον γιατρό σας πριν αυξήσετε την ένταση.</p></div>
+    </details>
+    <details>
+      <summary>Κίνηση και ύπνος</summary>
+      <div class="body"><p>Η τακτική άσκηση βοηθά να κοιμάστε καλύτερα. Αποφύγετε μόνο την έντονη άσκηση ακριβώς πριν τον ύπνο. Η κίνηση και η απώλεια βάρους βοηθούν επίσης στο ροχαλητό και την άπνοια.</p></div>
+    </details>
+    <details>
+      <summary>Πηγές</summary>
+      <div class="body sources"><ul>
+        <li>Lloyd-Jones DM, et al. Life's Essential 8. Circulation. 2022;146(5):e18–e43.</li>
+        <li>Bull FC, et al. World Health Organization 2020 guidelines on physical activity and sedentary behaviour. Br J Sports Med. 2020;54(24):1451–1462.</li>
+        <li>Piercy KL, et al. The Physical Activity Guidelines for Americans. JAMA. 2018;320(19):2020–2028.</li>
+      </ul></div>
+    </details>
+  </section>
+</div>
+
+<script>
+(function(){
+  /* calculator */
+  var v={mod:0,vig:0};
+  function calc(){
+    var t=v.mod+2*v.vig,p=Math.min(100,Math.round(t/150*100));
+    document.getElementById("mod").textContent=v.mod+" λ.";
+    document.getElementById("vig").textContent=v.vig+" λ.";
+    document.getElementById("tot").textContent=t;
+    var b=document.getElementById("bar");b.querySelector("i").style.width=p+"%";b.classList.toggle("done",t>=150);
+    document.getElementById("calc-msg").textContent=t===0?"Πατήστε + για να προσθέσετε λεπτά.":t>=150?"Μπράβο! Πετυχαίνετε τον στόχο. Κρατήστε τον και προσθέστε 2 μέρες ενδυνάμωσης.":"Σας λείπουν "+(150-t)+" λεπτά. Για παράδειγμα, "+Math.ceil((150-t)/10)*10/ 10+" επιπλέον περίπατοι των 10 λεπτών.";
+  }
+  document.querySelectorAll(".stepper button").forEach(function(b){b.onclick=function(){var k=b.dataset.t;v[k]=Math.max(0,Math.min(k==="mod"?600:300,v[k]+ +b.dataset.d));calc()}});
+  calc();
+
+  /* sort game */
+  var ACTS=[["🚶","Γρήγορο περπάτημα","m","Μπορείτε να μιλάτε αλλά όχι να τραγουδάτε: μέτρια."],["🏃","Τρέξιμο","v","Δύσκολο να μιλάτε: έντονη."],["💃","Χορός","m","Στους περισσότερους χορούς: μέτρια."],["🌱","Κηπουρική, σκάψιμο","m","Μέτρια, και δυναμώνει και τα χέρια."],["⛰️","Ανηφορική πεζοπορία","v","Η ανηφόρα την κάνει έντονη."],["🚴","Ποδήλατο με χαλαρό ρυθμό","m","Σε επίπεδο δρόμο και χαλαρά: μέτρια."],["🏊","Κολύμβηση με γρήγορο ρυθμό","v","Συνεχείς απλωτές με ρυθμό: έντονη."],["🧹","Σφουγγάρισμα, σκούπισμα με ένταση","m","Οι δουλειές του σπιτιού με ένταση μετράνε ως μέτρια."]];
+  var sortEl=document.getElementById("sort");
+  sortEl.innerHTML=ACTS.map(function(a,i){return'<div class="act" data-i="'+i+'"><span class="ic" aria-hidden="true">'+a[0]+'</span><b>'+a[1]+'</b><div class="ch"><button type="button" data-g="m">Μέτρια</button><button type="button" data-g="v">Έντονη</button></div><span class="ex" aria-live="polite"></span></div>'}).join("");
+  sortEl.querySelectorAll(".act").forEach(function(c){
+    var a=ACTS[c.dataset.i];
+    c.querySelectorAll("button").forEach(function(b){b.onclick=function(){
+      c.querySelectorAll("button").forEach(function(x){x.classList.remove("right","wrong")});
+      var ok=b.dataset.g===a[2];b.classList.add(ok?"right":"wrong");
+      c.querySelector(".ex").textContent=(ok?"Σωστά! ":"Όχι ακριβώς. ")+a[3];
+    }});
+  });
+
+  /* weekly plan */
+  var DAYS=["Δευ","Τρί","Τετ","Πέμ","Παρ","Σάβ","Κυρ"],KEY="euzoia-activity-week";
+  var st={m:[0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0]};
+  try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.m&&s.m.length===7&&s.s)st=s}catch(e){}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+  var pl=document.getElementById("pl");
+  function render(){
+    pl.innerHTML=DAYS.map(function(d,i){return'<div class="pday'+(st.m[i]?" on":"")+(st.s[i]?" str":"")+'"><span>'+d+'</span><b>'+st.m[i]+'΄</b><button type="button" class="btn" style="padding:.25rem .4rem;font-size:.75rem;align-self:stretch" data-a="m" data-i="'+i+'" aria-label="Προσθήκη 10 λεπτών '+d+'">+10΄</button><button type="button" data-a="s" data-i="'+i+'" aria-pressed="'+(!!st.s[i])+'" style="border:1px solid var(--line);background:'+(st.s[i]?"var(--protein)":"var(--bg)")+';color:'+(st.s[i]?"#fff":"inherit")+';border-radius:6px;font-size:.7rem;padding:.2rem .1rem;align-self:stretch">Δύναμη</button></div>'}).join("");
+    var t=st.m.reduce(function(a,b){return a+b},0),ns=st.s.filter(Boolean).length,p=Math.min(100,Math.round(t/150*100));
+    var b=document.getElementById("pbar");b.querySelector("i").style.width=p+"%";b.classList.toggle("done",t>=150);
+    document.getElementById("pmsg").textContent="Σύνολο: "+t+" από 150 λεπτά · Ενδυνάμωση: "+ns+" από 2 μέρες"+(t>=150&&ns>=2?" · Πετύχατε τον στόχο της εβδομάδας!":"");
+    pl.querySelectorAll("button").forEach(function(x){x.onclick=function(){var i=+x.dataset.i;if(x.dataset.a==="m"){st.m[i]=st.m[i]>=90?0:st.m[i]+10}else{st.s[i]=st.s[i]?0:1}save();render()}});
+  }
+  document.getElementById("preset").onclick=function(){st={m:[0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0]};save();render()};
+  render();
+})();
+</script>
+</body>
+</html>
